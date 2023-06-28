@@ -1,0 +1,11 @@
+### 인증서 생성
+POST {{auth-api}}/certificate
+Content-Type: application/json
+
+{
+  "publicKey": "test",
+  "serviceInfo": {
+    "serviceName": "user-service",
+    "RecognitionEndpoint": "userService/auth"
+  }
+}
