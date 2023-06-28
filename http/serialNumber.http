@@ -1,5 +1,5 @@
 ### 식별번호 검증
-GET {{auth-api}}/serial-number?serialNumber=3b843dfa-155d-11ee-be56-0242ac120002
+GET {{auth-api}}/serial-number?serialNumber=05a3b31b-be1e-40a9-84bb-9e41cb0589ce
 
 ### 식별번호 생성
 POST {{auth-api}}/serial-number
