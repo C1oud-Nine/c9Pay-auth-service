@@ -20,4 +20,8 @@ public class SerialNumberService {
         SerialNumber serialNumber = serialNumberRepository.save(new SerialNumber());
         return serialNumber.getSerialNumber();
     }
+
+    public boolean verifySerialNumber(UUID serialNumber) {
+        return serialNumberRepository.findById(serialNumber).isPresent();
+    }
 }

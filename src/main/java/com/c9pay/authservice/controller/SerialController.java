@@ -15,9 +15,14 @@ public class SerialController {
     private final SerialNumberService serialNumberService;
     @GetMapping
     public ResponseEntity<?> verifySerialNumber(@RequestParam UUID serialNumber) {
-        // todo 식별번호 검증 로직 작성
 
-        return ResponseEntity.ok().build();
+        boolean isValid = serialNumberService.verifySerialNumber(serialNumber);
+
+        if (isValid) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping
