@@ -30,10 +30,12 @@ public class CertificateProvider {
      * @param obj json 변환 오브젝트
      * @return certificate 인증서
      */
-    public Certificate getCertificate(Object obj) {
+    public Optional<Certificate> getCertificate(Object obj) {
 
         try {
-            String json = objectMapper.writeValueAsString(obj);
+            byte[] json = objectMapper.writeValueAsString(obj).getBytes(StandardCharsets.UTF_8);
+
+            if (json.length > keyAlgorithm.getMaxEncodingSize()) return Optional.empty();
 
             Cipher cipher = keyAlgorithm.getCipher();
             Signature signature = keyAlgorithm.getSignature();
@@ -41,7 +43,7 @@ public class CertificateProvider {
             cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPrivate());
             signature.initSign(keyPair.getPrivate());
 
-            byte[] encoded = cipher.doFinal(json.getBytes(StandardCharsets.UTF_8));
+            byte[] encoded = cipher.doFinal(json);
 
             String certificate = new String(Base64.getEncoder().encode(encoded),
                             StandardCharsets.UTF_8);
@@ -49,7 +51,7 @@ public class CertificateProvider {
             signature.update(encoded);
             String sign = new String(Base64.getEncoder().encode(signature.sign()));
 
-            return new Certificate(certificate, sign);
+            return Optional.of(new Certificate(certificate, sign));
 
         } catch (Exception e) {
             throw new RuntimeException(e);

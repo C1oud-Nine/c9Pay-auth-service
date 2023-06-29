@@ -43,7 +43,7 @@ class CertificateProviderTest {
         String json = objectMapper.writeValueAsString(hello);
 
         // when
-        Certificate encoded = certificateProvider.getCertificate(hello);
+        Certificate encoded = certificateProvider.getCertificate(hello).get();
         Optional<Hello> decrypt = certificateProvider.decrypt(encoded, Hello.class);
 
         // then

@@ -9,13 +9,15 @@ import java.security.*;
 @Component
 public class Rsa implements KeyAlgorithm {
 
+    private final int KEY_SIZE = 2048;
+
     @Override
     public KeyPair createKeyPair() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             SecureRandom random = new SecureRandom();
 
-            keyPairGenerator.initialize(512, random);
+            keyPairGenerator.initialize(KEY_SIZE, random);
 
             return keyPairGenerator.generateKeyPair();
 
@@ -44,5 +46,10 @@ public class Rsa implements KeyAlgorithm {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public int getMaxEncodingSize() {
+        return KEY_SIZE / 8 - 11;
     }
 }

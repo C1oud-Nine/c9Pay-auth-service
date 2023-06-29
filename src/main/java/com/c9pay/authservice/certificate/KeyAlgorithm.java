@@ -8,5 +8,5 @@ public interface KeyAlgorithm {
     public KeyPair createKeyPair();
     public Signature getSignature();
     public Cipher getCipher();
-
+    public int getMaxEncodingSize();
 }

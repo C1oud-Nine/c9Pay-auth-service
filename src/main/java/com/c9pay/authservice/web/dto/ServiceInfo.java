@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServiceInfo {
-    private String serviceName;
-    private String RecognitionEndpoint;
+    private String name;
+    private String endpoint;
 }

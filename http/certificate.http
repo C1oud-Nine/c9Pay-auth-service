@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "publicKey": "test",
   "serviceInfo": {
-    "serviceName": "user-service",
-    "RecognitionEndpoint": "userService/auth"
+    "name": "user-service",
+    "endpoint": "userService/auth"
   }
 }
