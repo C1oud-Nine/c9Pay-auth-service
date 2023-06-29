@@ -1,7 +1,7 @@
-package com.c9pay.authservice.service;
+package com.c9pay.authservice.web.service;
 
 import com.c9pay.authservice.entity.SerialNumber;
-import com.c9pay.authservice.repository.SerialNumberRepository;
+import com.c9pay.authservice.web.repository.SerialNumberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

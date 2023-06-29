@@ -1,4 +1,4 @@
-package com.c9pay.authservice.repository;
+package com.c9pay.authservice.web.repository;
 
 import com.c9pay.authservice.entity.SerialNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
