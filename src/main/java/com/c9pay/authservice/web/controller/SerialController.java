@@ -1,7 +1,7 @@
-package com.c9pay.authservice.controller;
+package com.c9pay.authservice.web.controller;
 
-import com.c9pay.authservice.dto.SerialNumberResponse;
-import com.c9pay.authservice.service.SerialNumberService;
+import com.c9pay.authservice.web.dto.SerialNumberResponse;
+import com.c9pay.authservice.web.service.SerialNumberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

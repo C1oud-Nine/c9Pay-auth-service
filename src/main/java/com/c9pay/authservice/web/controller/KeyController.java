@@ -1,6 +1,6 @@
-package com.c9pay.authservice.controller;
+package com.c9pay.authservice.web.controller;
 
-import com.c9pay.authservice.dto.PublicKeyResponse;
+import com.c9pay.authservice.web.dto.PublicKeyResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,7 +1,7 @@
-package com.c9pay.authservice.controller;
+package com.c9pay.authservice.web.controller;
 
-import com.c9pay.authservice.dto.CertificateForm;
-import com.c9pay.authservice.dto.CertificateResponse;
+import com.c9pay.authservice.web.dto.CertificateForm;
+import com.c9pay.authservice.web.dto.CertificateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,8 +1,8 @@
 package com.c9pay.authservice.controller;
 
 import com.c9pay.authservice.entity.SerialNumber;
-import com.c9pay.authservice.repository.SerialNumberRepository;
-import com.c9pay.authservice.service.SerialNumberService;
+import com.c9pay.authservice.web.repository.SerialNumberRepository;
+import com.c9pay.authservice.web.service.SerialNumberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
