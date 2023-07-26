@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: auth-service
   jpa:
     hibernate:
       ddl-auto: create
@@ -15,3 +17,16 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: info
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3, w3c
+      produce: b3, w3c
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
