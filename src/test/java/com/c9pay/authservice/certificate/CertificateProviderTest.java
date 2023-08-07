@@ -10,24 +10,24 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Provider;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CertificateProviderTest {
     CertificateProvider certificateProvider;
     ObjectMapper objectMapper;
+    Rsa rsa;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        Rsa rsa = new Rsa();
-        certificateProvider = new CertificateProvider(rsa, objectMapper);
+        rsa = new Rsa();
+        certificateProvider = new CertificateProvider(rsa);
         certificateProvider.createKeyPair();
     }
 
@@ -51,17 +51,17 @@ class CertificateProviderTest {
         // given
         Hello hello = new Hello("Jaedoo", 25);
         String json = objectMapper.writeValueAsString(hello);
-        System.out.println(json.length());
+        KeyPair keyPair = rsa.createKeyPair();
+        String pubkey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
 
         // when
-        Certificate encoded = certificateProvider.getCertificate(hello).get();
-        System.out.println(encoded.getCertificate().length());
-        Optional<Hello> decrypt = certificateProvider.decrypt(encoded, Hello.class);
+        String encoded = certificateProvider.getCertificate("auth", json, pubkey).get();
+        Certificate decode = certificateProvider.decode(encoded);
+        System.out.println(decode);
 
         // then
-        assertTrue(decrypt.isPresent());
-        assertEquals(hello.name, decrypt.get().name);
-        assertEquals(hello.age, decrypt.get().age);
+        assertEquals(keyPair.getPublic().toString(), decode.getPublicKey().toString());
+        assertDoesNotThrow(()->decode.verify(certificateProvider.getPublicKey()));
     }
 
     @Test
@@ -74,17 +74,6 @@ class CertificateProviderTest {
         String base64Encoded = new String(Base64.getEncoder().encode(publicKey.getEncoded()),
                 StandardCharsets.UTF_8);
 
-        // when
-        Certificate encoded = certificateProvider.getCertificate(expected).get();
-        Optional<CertificateForm> decrypt = certificateProvider.decrypt(encoded, CertificateForm.class);
-
-        // then
-        assertTrue(decrypt.isPresent());
-        assertEquals(expected.toString(), decrypt.get().toString());
-
-        System.out.println("Certification: " + encoded.getCertificate());
-        System.out.println("Signature: " + encoded.getSign());
-        System.out.println("PublicKey: " + base64Encoded);
     }
 
     static class Hello {
