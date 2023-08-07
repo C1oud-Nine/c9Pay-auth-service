@@ -27,6 +27,15 @@ public class Rsa implements KeyAlgorithm {
     }
 
     @Override
+    public KeyFactory getKeyFactory() {
+        try {
+            return KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Signature getSignature() {
         try {
 

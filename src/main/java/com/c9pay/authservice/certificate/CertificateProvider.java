@@ -1,87 +1,93 @@
 package com.c9pay.authservice.certificate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Cipher;
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PublicKey;
-import java.security.Signature;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.X509EncodedKeySpec;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class CertificateProvider {
-    private KeyPair keyPair;
     private final KeyAlgorithm keyAlgorithm;
-    private final ObjectMapper objectMapper;
+    private KeyPair keyPair;
+    private JcaX509CertificateConverter x509CertificateConverter;
+    private String securityProvider;
 
     @PostConstruct
     public void createKeyPair() {
+        Security.addProvider(new BouncyCastleProvider());
         keyPair = keyAlgorithm.createKeyPair();
+        securityProvider = BouncyCastleProvider.PROVIDER_NAME;
+        x509CertificateConverter = new JcaX509CertificateConverter().setProvider(securityProvider);
     }
 
     /**
      * Object를 받아서 Certificate를 반환
-     * @param obj json 변환 오브젝트
-     * @return certificate 인증서
      */
-    public Optional<Certificate> getCertificate(Object obj) {
-
+    public Optional<String> getCertificate(String issuerStr, String subjectStr, String pubkey) {
         try {
-            byte[] json = objectMapper.writeValueAsString(obj).getBytes(StandardCharsets.UTF_8);
+            byte[] decode = Base64.getDecoder().decode(pubkey);
+            X509EncodedKeySpec pkeySpec = new X509EncodedKeySpec(decode);
+            PublicKey subjectKey = keyAlgorithm.getKeyFactory().generatePublic(pkeySpec);
 
-            if (json.length > keyAlgorithm.getMaxEncodingSize()) return Optional.empty();
+            JcaX509ExtensionUtils x509ExtensionUtils = new JcaX509ExtensionUtils();
+            String signatureAlgorithm = "sha256WithRSA";
 
-            Cipher cipher = keyAlgorithm.getCipher();
-            Signature signature = keyAlgorithm.getSignature();
+            X500Name issuer = new X500NameBuilder()
+                    .addRDN(BCStyle.CN, issuerStr)
+                    .build();
 
-            cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPrivate());
-            signature.initSign(keyPair.getPrivate());
+            X500Name subject = new X500NameBuilder()
+                    .addRDN(BCStyle.CN, subjectStr)
+                    .build();
 
-            byte[] encoded = cipher.doFinal(json);
+            BigInteger serialNumber = new BigInteger(128, new SecureRandom());
+            ZonedDateTime now = ZonedDateTime.now();
+            Date notBefore = Date.from(now.toInstant());
+            Date notAfter = Date.from(now.plus(30, ChronoUnit.MONTHS).toInstant());
 
-            String certificate = new String(Base64.getEncoder().encode(encoded),
-                            StandardCharsets.UTF_8);
+            X509CertificateHolder rootCertHolder = new JcaX509v3CertificateBuilder(issuer, serialNumber, notBefore, notAfter, subject, subjectKey)
+                    .build(new JcaContentSignerBuilder(signatureAlgorithm).build(keyPair.getPrivate()));
 
-            signature.update(encoded);
-            String sign = new String(Base64.getEncoder().encode(signature.sign()));
-
-            return Optional.of(new Certificate(certificate, sign));
-
+            X509Certificate rootCert = x509CertificateConverter.getCertificate(rootCertHolder);
+            byte[] encoded = rootCert.getEncoded();
+            return Optional.of(new String(Base64.getEncoder().encode(encoded)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public <T> Optional<T> decrypt(Certificate encoded, Class<T> type) {
-        Cipher cipher = keyAlgorithm.getCipher();
-        Signature signature = keyAlgorithm.getSignature();
-
+    public Certificate decode(String certificate) {
         try {
-            // Base64로 인코딩된 인증서 디코딩
-            byte[] messageEncoded = Base64.getDecoder().decode(encoded.getCertificate().getBytes(StandardCharsets.UTF_8));
 
-            // 서명 검증
-            signature.initVerify(keyPair.getPublic());
-            signature.update(messageEncoded);
-            byte[] sign = Base64.getDecoder().decode(encoded.getSign());
+            byte[] decode = Base64.getDecoder().decode(certificate.getBytes());
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-            if (signature.verify(sign)) {
-
-                cipher.init(Cipher.DECRYPT_MODE, keyPair.getPublic());
-
-                String json = new String(cipher.doFinal(messageEncoded), StandardCharsets.UTF_8);
-                T obj = objectMapper.readValue(json, type);
-                return Optional.of(obj);
-
-            } else {
-                return Optional.empty();
-            }
+            return cf.generateCertificate(new ByteArrayInputStream(decode));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

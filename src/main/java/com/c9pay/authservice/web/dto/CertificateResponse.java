@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CertificateResponse {
     private String certificate;
-    private String sign;
 }
