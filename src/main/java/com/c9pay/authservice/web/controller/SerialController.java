@@ -1,5 +1,8 @@
 package com.c9pay.authservice.web.controller;
 
+import com.c9pay.authservice.token.KeyManager;
+import com.c9pay.authservice.token.TokenProvider;
+import com.c9pay.authservice.web.dto.ExchangeToken;
 import com.c9pay.authservice.web.dto.SerialNumberResponse;
 import com.c9pay.authservice.web.service.SerialNumberService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +18,18 @@ import java.util.UUID;
 @RequestMapping("/serial-number")
 public class SerialController {
     private final SerialNumberService serialNumberService;
-    @GetMapping
-    public ResponseEntity<?> verifySerialNumber(@RequestParam UUID serialNumber) {
+    private final TokenProvider tokenProvider;
+
+    @PostMapping
+    public ResponseEntity<SerialNumberResponse> createSerialNumber() {
+        log.info("create new Serial number");
+        UUID serialNumber = serialNumberService.createSerialNumber();
+
+        return ResponseEntity.ok(new SerialNumberResponse(serialNumber));
+    }
+
+    @GetMapping("/{serialNumber}")
+    public ResponseEntity<?> verifySerialNumber(@PathVariable("serialNumber") UUID serialNumber) {
 
         boolean isValid = serialNumberService.verifySerialNumber(serialNumber);
 
@@ -27,11 +40,15 @@ public class SerialController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<SerialNumberResponse> createSerialNumber() {
-        log.info("create new Serial number");
-        UUID serialNumber = serialNumberService.createSerialNumber();
+    @GetMapping("/{serialNumber}/exchange")
+    public ResponseEntity<?> getExchangeToken(@PathVariable("serialNumber") UUID serialNumber) {
+        boolean isValid = serialNumberService.verifySerialNumber(serialNumber);
 
-        return ResponseEntity.ok(new SerialNumberResponse(serialNumber));
+        if (isValid) {
+            ExchangeToken exchangeToken = tokenProvider.generateToken(serialNumber.toString());
+            return ResponseEntity.ok(exchangeToken);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificateResponse {
-    private String certificate;
+public class ExchangeToken {
+    private String content;
+    private Long expiredAt;
+    private String sign;
 }

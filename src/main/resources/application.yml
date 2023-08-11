@@ -32,3 +32,11 @@ management:
   zipkin:
     tracing:
       endpoint: "http://localhost:9411/api/v2/spans"
+
+
+token:
+  time: 60000
+
+auth:
+  private-key: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAxKDUR0cZlqlQMApI1elJYRI2nl18kl1viRvvbiZy+SeC2YM0NCbzoBcuG2sq3FaercxKt4tWtMR+Cyix1+jjkwIDAQABAkAso05NuCho+ZsIrO0IEuPjs5zOqu6C089kUwEyAmyLfzSEDrX0xLjlyE+v4SqQ/pnbbMZuSN6PCGhJfPgK9rHRAiEAzXLLnv9o/BDIaGs9/I5ievVu+0Mu9UX5U8JZtiIW+2UCIQD1AnNFuG4H5buhYQLp7DM0TpE+DsAqGRaKtkowz53/lwIgeLNzy6LUpBqcEzTGQyXH1+Nv43CSGwmUNNBe8nFOvT0CIQDNeo+YUlOdNfNFJaoe6uQKozW2OQK6i63XCYhxJT4Z4wIgTv1gxrNiHRPuTu8zAsfnO3COT/f2Yd8wXf4eHNSo/gk=
+  public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMSg1EdHGZapUDAKSNXpSWESNp5dfJJdb4kb724mcvkngtmDNDQm86AXLhtrKtxWnq3MSreLVrTEfgsosdfo45MCAwEAAQ==
