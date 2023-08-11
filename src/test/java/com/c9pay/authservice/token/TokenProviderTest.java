@@ -18,7 +18,7 @@ class TokenProviderTest {
     void 암복호화테스트() throws Exception {
 
         KeyManager keyManager = new KeyManager(publicKeyString, privateKeyString);
-        TokenProvider tokenProvider = new TokenProvider(6000, keyManager);
+        TokenProvider tokenProvider = new TokenProvider(6000, privateKeyString);
         UUID expected = UUID.randomUUID();
 
         ExchangeToken exchangeToken = tokenProvider.generateToken(expected.toString());
