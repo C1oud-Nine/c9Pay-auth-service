@@ -3,17 +3,6 @@ server.port: 8081
 spring:
   application:
     name: auth-service
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
 logging:
   level:
@@ -50,3 +39,42 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      dialect: ENC(v3qfZ5piTBS7ZsTqma6MZYLnflHikRJtVzhKWljENeNziGzC+U3edPEvQAzVfsfpx+Nc7nIfyjw=)
+    properties:
+      hibernate:
+        format_sql: true
+
+  datasource:
+    url: ENC(oVnUh5o7+vgljFTJU6aEY/WLOSkFNVMJzrLfh36Iqq7u0vDrUFWF2Mo4RlgbwcJWlBNhcCcC42cX8l61+3HsgQLUlz9omaG8t1tQl7+wZ3eX/D4BcvNGdfeJTwkiN6zw)
+    username: ENC(7ET9MdJPZoPpUNGcn9Y9cPgl+10tPAHg)
+    password: ENC(ZHYTATtVoq6Uqk39mE2PUaRtCY1eTTj4)
+
