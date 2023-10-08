@@ -11,7 +11,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: info
   pattern:
-    level: "${hostname}"
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
 
 management:
   tracing:
@@ -39,7 +39,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+    instance-id: ${hostname}
 
 ---
 
