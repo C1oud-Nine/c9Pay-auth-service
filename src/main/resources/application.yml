@@ -11,7 +11,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: info
   pattern:
-    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+    level: "${hostname}"
 
 management:
   tracing:
@@ -75,6 +75,7 @@ spring:
         format_sql: true
 
   datasource:
+    hikari.maximum-pool-size: 3
     url: ENC(oVnUh5o7+vgljFTJU6aEY/WLOSkFNVMJzrLfh36Iqq7u0vDrUFWF2Mo4RlgbwcJWlBNhcCcC42cX8l61+3HsgQLUlz9omaG8t1tQl7+wZ3eX/D4BcvNGdfeJTwkiN6zw)
     username: ENC(7ET9MdJPZoPpUNGcn9Y9cPgl+10tPAHg)
     password: ENC(ZHYTATtVoq6Uqk39mE2PUaRtCY1eTTj4)
